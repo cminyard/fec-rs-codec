@@ -14,7 +14,7 @@ static unsigned int
 test_one(unsigned int num_errs)
 {
     unsigned int i;
-    int origbuf[223 * 8], inbuf[255 * 8], encbuf[255 * 8];
+    int inbuf[233 * 8], encbuf[255 * 8];
     int outbuf[223 * 8], codebuf[255 * 8];
     bool errpos[255] = { false };
     unsigned int err = 0;
@@ -22,21 +22,18 @@ test_one(unsigned int num_errs)
     unsigned int errcount = 0;
 #endif
 
-    for (i = 0; i < 223 * 8; i++) {
+    for (i = 0; i < 223 * 8; i++)
 	inbuf[i] = rand() & 1;
-	origbuf[i] = inbuf[i];
-    }
-    for (; i < 255 * 8; i++)
-	inbuf[i] = 0;
 
     rs_encode(inbuf, encbuf);
 
+    /* Inject some errors. */
     for (i = 0; i < num_errs; ) {
 	unsigned int pos = rand() % (255 * 8);
 
 	encbuf[pos] ^= 1;
 	if (errpos[pos / 8])
-	    /* In the same symbol. */
+	    /* In the same symbol, it won't be a new error. */
 	    continue;
 
 	errpos[pos / 8] = true;
@@ -51,7 +48,7 @@ test_one(unsigned int num_errs)
 #endif
 
     for (i = 0; i < 223; i++) {
-	if (outbuf[i] != origbuf[i]) {
+	if (outbuf[i] != inbuf[i]) {
 	    err = 1;
 	    break;
 	}

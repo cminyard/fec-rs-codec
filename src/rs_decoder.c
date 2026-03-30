@@ -89,7 +89,7 @@ static int berlekamp_massey(const uint16_t *S, uint16_t *sigma_out) {
   int m_shift = 1;
   uint16_t bbb = 1;
 
-  for (int n = 0; n < T; n++) {
+  for (int n = 0; n < T - 1; n++) {
     uint16_t d = S[n];
     for (int i = 1; i <= L; i++)
       d ^= rs_gf_mul(C[i], S[n - i]);
